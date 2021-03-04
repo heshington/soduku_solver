@@ -10,6 +10,8 @@ board = [[5, 3, 0, 0, 7, 0, 0, 0, 0],
         [0, 0, 0, 4, 1, 9, 0, 0, 5],
         [0, 0, 0, 0, 8, 0, 0, 7, 9]]
 
+
+
 def print_board(board):
 
     for row in board:
@@ -26,8 +28,28 @@ def find_zero(board):
             if value == 0:
                 return[row_count, col_count]
             col_count += 1
-        row_count += 1        
-    
+        row_count += 1
+    return None
+
+#check's is the value in the grid, return false if it is, true if its not
+def grid_call(row, col, value, max_row, max_col):
+       
+    if row <= max_row:
+        if col <=max_col:
+            row_counter = 0
+            col_counter = 0
+            while True:
+                for row_counter in range(max_row):
+                    for col_counter in range(max_col):
+                        board_val = board[row_counter][col_counter]
+                        if value == board_val:
+                            print("Returning false")
+                            return False
+                        col_counter +=1
+                    row_counter +=1    
+                return True        
+
+
 def is_valid(board, row, col, value):
     board_row =  board[row]
     #Row check 
@@ -43,54 +65,79 @@ def is_valid(board, row, col, value):
             print("Returning False")
             return False
         i +=1
-    #check grid 
-    counter = 0 
-    if row <= 2:
+#this part works out which 3X3 part of the sodku board where in. So it knows where to check, then it calls the grid_call method with the right paramaters. 
+    if row < 3:
         #first col 
-        if col <=2:
-            #first col, first row
-            row_counter = 0
-            col_counter = 0
-            while True:
-                for row_counter in range(3):
-                    for col_counter in range(3):
-                        board_val = board[row_counter][col_counter]
-                        if value == board_val:
-                            print("Returning false")
-                            return False
-                        col_counter +=1
-                    row_counter +=1    
-                return True      
-            
-                
+        if col <3:
+            #first row, first col
+            if grid_call(row,col, value, 3,3) == True:
+               return True
+           #first row second col
+        if col < 6 and col > 2:
+            if grid_call(row, col, value,3,6) == True:
+                return True
+            #first row, third col
+        if col < 9 and col > 5:
+            if grid_call(row, col, value,3,9) == True:
+                return True
+    #second row 
+    if row < 6 and row > 2:
+        #second row, first col
+        if col <3:
+            if grid_call(row,col, value, 6,3) == True:
+                return True
+        #second row, second row 
+        if col <6 and col > 2:
+            if grid_call(row,col, value, 6,6) == True:
+                return True
+        #second row, third row 
+        if col <9 and col > 5:
+            if grid_call(row,col, value, 6,9) == True:
+                return True
+    #third row 
+    if row < 9 and row > 5:
+        #third row, first col
+        if col < 3:       
+            if grid_call(row,col, value, 9,3) == True:
+                return True
+        #third row, second col
+        if col < 6 and col > 2:       
+            if grid_call(row,col, value, 9,6) == True:
+                return True
+        #third row, third col
+        if col < 9 and col > 5:       
+            if grid_call(row,col, value, 9,9) == True:
+                return True
 
-
-    #     if col <= 5:
-    #         #first col, second row
-    #     else:
-    #         #first col, third row
-    # if row <= 5:
-    #     #second grid
-    #     if col <=2:
-    #         #second col, first row
-    #     if col <= 5:
-    #         #second col, second row
-    #     else:
-    #         #second col, third row
-    # else:
-    #     #third grid
-    #     if col <=2:
-    #         #third col, first row
-    #     if col <= 5:
-    #         #third col, second row
-    #     else:
-    #         #third col, third row
 
 def solve(board):
-
+    #base case 
+    if find_zero(board) == None:
+        print("Puzzle Solved!")
+        return print_board(board) #print solved board 
+    else:
+        empty_space = find_zero(board)
+        x = empty_space[0]
+        y = empty_space[1]
+        #recursive case 
+        for value in range(1,9):
+            if is_valid(board,x, y, value) == True:
+                x = empty_space[0]
+                y = empty_space[1]
+                board[x][y] = value #assign the new value to the board 
+                
+                solve(board)
+                print(print_board(board))
+            else:
+                # is_valid return's false, backtrack 
+                board[x][y] = 0 #change value back to 0, value will increment next loop.
+                print(print_board(board))
+                #solve(board) #call the method again but with 
     return   
 
-print_board(board)
-print(find_zero(board))
+#print_board(board)
+#print(find_zero(board))
+#arugments board, row, col, value
+#is_valid(board,0,2,4)
 
-is_valid(board,0,0,9)
+solution = solve(board)
