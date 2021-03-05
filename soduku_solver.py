@@ -1,5 +1,4 @@
 
-
 board = [[5, 3, 0, 0, 7, 0, 0, 0, 0],
         [6, 0, 0, 1, 9, 5, 0, 0, 0],
         [0, 9, 8, 0, 0, 0, 0, 6, 0],
@@ -9,8 +8,6 @@ board = [[5, 3, 0, 0, 7, 0, 0, 0, 0],
         [0, 6, 0, 0, 0, 0, 2, 8, 0],
         [0, 0, 0, 4, 1, 9, 0, 0, 5],
         [0, 0, 0, 0, 8, 0, 0, 7, 9]]
-
-
 
 def print_board(board):
 
@@ -108,36 +105,38 @@ def is_valid(board, row, col, value):
         if col < 9 and col > 5:       
             if grid_call(row,col, value, 9,9) == True:
                 return True
+    return False
 
 
 def solve(board):
     #base case 
     if find_zero(board) == None:
         print("Puzzle Solved!")
-        return print_board(board) #print solved board 
+        print_board(board) #print solved board 
+        return board
     else:
+        #calls find_zero function which looks for a 0 on the board.
         empty_space = find_zero(board)
         x = empty_space[0]
         y = empty_space[1]
-        #recursive case 
-        for value in range(1,9):
+        #recursive case Trys to fill in a value starting at 1, calls the is_valid 
+      
+        for value in range(1,10):
+    
             if is_valid(board,x, y, value) == True:
                 x = empty_space[0]
                 y = empty_space[1]
                 board[x][y] = value #assign the new value to the board 
+                return solve(board) #recursurvly call again, with updated board.
                 
-                solve(board)
                 print(print_board(board))
-            else:
-                # is_valid return's false, backtrack 
-                board[x][y] = 0 #change value back to 0, value will increment next loop.
+            if is_valid(board,x, y, value) == False:
                 print(print_board(board))
-                #solve(board) #call the method again but with 
-    return   
+                if value == 9: #have tried all values no valid solution backtrack 
+                    board[x][y-1] = 0 #set value back to 0 
+                    print_board(board) 
+                    return solve(board) #call solveboard again... problem is it's going to try the same value ... 
+    return print("No Solution")
 
-#print_board(board)
-#print(find_zero(board))
-#arugments board, row, col, value
-#is_valid(board,0,2,4)
 
 solution = solve(board)
